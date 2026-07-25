@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "try": "vitest run --config vitest.scratch.config.ts --disableConsoleIntercept"
   },
   "dependencies": {
     "next": "16.2.11",
