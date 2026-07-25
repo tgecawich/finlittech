@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FinLitTech
 
-## Getting Started
+Free personal finance calculators for high school students.
 
-First, run the development server:
+**Live:** _(coming soon)_
+
+Rhode Island requires a consumer education course to graduate (RIGL 16-22-13). This
+project accompanies original research on that requirement, and starts from the
+assumption that the requirement isn't the problem. Students sit through the lesson.
+What they rarely do is see their own numbers.
+
+So this is not a course. It's four calculators that answer four questions in under a
+minute, on a phone, without an account:
+
+- **Credit card** — how long a balance takes to pay off, and what the interest costs.
+  Including the case where the minimum payment never pays it off at all.
+- **Compound interest** — what starting now is worth versus starting ten years later.
+- **Loan** — a full amortization schedule for a car or student loan.
+- **Paycheck** — gross to net, with federal, FICA, and Rhode Island withholding.
+
+No accounts, no tracking of anything typed, no advice. Enter a number, see a number.
+
+## How the math works
+
+Everything financial lives in [`lib/finance/`](lib/finance/) and nothing else does
+arithmetic on money. Those modules are pure and framework-free — no React, no Next.js,
+no DOM — so they can be run from a plain Node script and are tested on their own terms.
+
+Money is **integer cents** end to end. Floating-point dollars are a correctness bug in
+a financial app (`0.1 + 0.2 !== 0.3`), so amounts are converted to cents on input and
+back to a string exactly once, at the render boundary. Interest accrues on integer
+cents and rounds half-up at the close of each period — one convention, applied
+everywhere, which is what makes the schedules sum cleanly and the closing balance land
+on exactly zero rather than a few cents off.
+
+| Module | What it does |
+| --- | --- |
+| `types.ts` | `Cents`, `Rate`, `Months`, and the validating constructors |
+| `money.ts` | Arithmetic on cents, and `formatUSD()` at the boundary |
+| `credit-card.ts` | Month-by-month payoff simulation |
+| `compound.ts` | Future value of an ordinary annuity |
+| `loan.ts` | Amortization, with the final payment absorbing the rounding residual |
+| `paycheck.ts` | Federal, FICA, and Rhode Island withholding |
+| `constants.ts` | Every rate, bracket, and default — each with a source URL |
+
+Default rates and tax brackets are cited in `constants.ts` with the year they apply to.
+The test suite fails if the tax year falls behind the current one, so the numbers
+can't quietly go stale.
+
+Design decisions worth explaining are recorded in [`docs/decisions/`](docs/decisions/).
+
+## Running it
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open <http://localhost:3000>.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm test          # unit and property tests
+npm run typecheck # tsc --noEmit
+npm run lint
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## License
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT — see [LICENSE](LICENSE).

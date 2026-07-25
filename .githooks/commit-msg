@@ -1,0 +1,43 @@
+#!/bin/sh
+#
+# commit-msg — strip generated attribution trailers.
+#
+# This is deliberately independent of any tool's configuration. Settings can be
+# reset, overridden per-project, or silently changed by an update; a hook in the
+# repository is the only thing that actually guarantees these lines never land
+# in history.
+#
+# Enabled via: git config core.hooksPath .githooks
+
+set -e
+
+msg="$1"
+[ -f "$msg" ] || exit 0
+
+work="${msg}.attrib"
+
+# Pass 1 — delete attribution lines.
+#
+#   ^Co-Authored-By: Claude      (any capitalisation of the trailer key)
+#   Generated with [Claude Code] (any bracket form, or none)
+#   ^Claude-Session:
+#   lines opening with the robot emoji
+#
+# Leading whitespace is tolerated so an indented trailer cannot slip through.
+sed \
+	-e '/^[[:space:]]*[Cc]o-[Aa]uthored-[Bb]y:[[:space:]]*Claude/d' \
+	-e '/[Gg]enerated with[[:space:]]*[][(){}<]*[[:space:]]*Claude Code/d' \
+	-e '/^[[:space:]]*Claude-Session:/d' \
+	-e '/^[[:space:]]*🤖/d' \
+	"$msg" >"$work"
+
+# Pass 2 — collapse trailing blank lines.
+#
+# Blank lines are buffered and only emitted once a non-blank line follows them,
+# so interior spacing survives and anything trailing is dropped.
+awk '
+	/^[[:space:]]*$/ { pending = pending $0 "\n"; next }
+	{ printf "%s", pending; pending = ""; print }
+' "$work" >"$msg"
+
+rm -f "$work"

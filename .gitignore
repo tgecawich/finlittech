@@ -39,3 +39,20 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local agent config and private spec — never published
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+.claudeignore
+.mcp.json
+AGENTS.md
+
+# deployment
+.vercel
+
+# testing
+coverage/
+
+# backups
+*.bak
