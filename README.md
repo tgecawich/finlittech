@@ -29,9 +29,11 @@ no DOM — so they can be run from a plain Node script and are tested on their o
 Money is **integer cents** end to end. Floating-point dollars are a correctness bug in
 a financial app (`0.1 + 0.2 !== 0.3`), so amounts are converted to cents on input and
 back to a string exactly once, at the render boundary. Interest accrues on integer
-cents and rounds half-up at the close of each period — one convention, applied
-everywhere, which is what makes the schedules sum cleanly and the closing balance land
-on exactly zero rather than a few cents off.
+cents and rounds half **away from zero** at the close of each period — one convention,
+applied everywhere, which is what makes the schedules sum cleanly and the closing
+balance land on exactly zero rather than a few cents off. (Away from zero rather than
+up, so that a refund rounds to the same magnitude as an equivalent charge; see
+[ADR 0001](docs/decisions/0001-rounding-convention.md).)
 
 | Module | What it does |
 | --- | --- |
@@ -60,6 +62,7 @@ Then open <http://localhost:3000>.
 
 ```bash
 npm test          # unit and property tests
+npm run coverage  # the same suite, enforcing 100% branch coverage on lib/finance
 npm run typecheck # tsc --noEmit
 npm run lint
 ```
