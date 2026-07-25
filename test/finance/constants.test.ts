@@ -4,7 +4,7 @@ import {
   DEFAULT_CREDIT_CARD_APR,
   DEFAULT_CREDIT_CARD_APR_AS_OF,
   MINIMUM_PAYMENT_BALANCE_FRACTION,
-  MINIMUM_PAYMENT_FLOOR_DOLLARS,
+  MINIMUM_PAYMENT_FLOOR,
 } from '@/lib/finance/constants';
 import { assertAnnualRate } from '@/lib/finance/types';
 
@@ -60,8 +60,8 @@ describe('DEFAULT_CREDIT_CARD_APR', () => {
 });
 
 describe('minimum payment constants', () => {
-  it('describes a 1% floor of $25', () => {
+  it('describes a 1% minimum with a $25 floor, held in cents', () => {
     expect(MINIMUM_PAYMENT_BALANCE_FRACTION).toBe(0.01);
-    expect(MINIMUM_PAYMENT_FLOOR_DOLLARS).toBe(25);
+    expect(MINIMUM_PAYMENT_FLOOR).toBe(2500);
   });
 });

@@ -6,7 +6,7 @@
  * footer cites this file, so a number without a URL beside it is a defect.
  */
 
-import type { Rate } from './types';
+import { toCents, type Cents, type Rate } from './types';
 
 /**
  * Average APR on credit card accounts *assessed interest* — that is, accounts
@@ -48,5 +48,13 @@ export const DEFAULT_CREDIT_CARD_APR_AS_OF: readonly [year: number, quarter: num
  */
 export const MINIMUM_PAYMENT_BALANCE_FRACTION: Rate = 0.01;
 
-/** Dollar floor on a typical issuer minimum payment. See above for source. */
-export const MINIMUM_PAYMENT_FLOOR_DOLLARS = 25;
+/**
+ * Floor on a typical issuer minimum payment.
+ *
+ * Held as `Cents` rather than as a dollar number so that money is integer cents
+ * everywhere in the domain without exception — a constant is exactly the kind
+ * of place a stray float would otherwise get in.
+ *
+ * See {@link MINIMUM_PAYMENT_BALANCE_FRACTION} for the source.
+ */
+export const MINIMUM_PAYMENT_FLOOR: Cents = toCents(25);

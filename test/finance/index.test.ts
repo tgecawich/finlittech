@@ -15,7 +15,7 @@ describe('lib/finance public API', () => {
         'DEFAULT_CREDIT_CARD_APR_AS_OF',
         'MAX_CENTS',
         'MINIMUM_PAYMENT_BALANCE_FRACTION',
-        'MINIMUM_PAYMENT_FLOOR_DOLLARS',
+        'MINIMUM_PAYMENT_FLOOR',
         'ONE_CENT',
         'ZERO_CENTS',
         'addCents',
