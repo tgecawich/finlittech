@@ -24,14 +24,14 @@ const TOOLS = [
   },
   {
     name: "Loan",
-    description: "A full payment schedule for a car or student loan.",
-    href: null,
+    description: "The monthly payment on a car or student loan, and its true cost.",
+    href: "/loan",
   },
   {
     name: "Paycheck",
     description:
       "Gross to net, with federal, FICA, and Rhode Island withholding.",
-    href: null,
+    href: "/paycheck",
   },
 ] as const;
 
@@ -51,30 +51,18 @@ export default function Home() {
         {TOOLS.map((tool) => (
           <li key={tool.name}>
             <hr className="border-0 border-t border-rule" />
-            {tool.href ? (
-              <Link
-                href={tool.href}
-                className="group block py-6 transition-opacity duration-150 hover:opacity-70"
-              >
-                <span className="figure-secondary block">
-                  {tool.name}{" "}
-                  <span aria-hidden="true" className="text-ink-muted">
-                    &rarr;
-                  </span>
+            <Link
+              href={tool.href}
+              className="group block py-6 transition-opacity duration-150 hover:opacity-70"
+            >
+              <span className="figure-secondary block">
+                {tool.name}{" "}
+                <span aria-hidden="true" className="text-ink-muted">
+                  &rarr;
                 </span>
-                <span className="measure mt-2 block">{tool.description}</span>
-              </Link>
-            ) : (
-              <div className="py-6">
-                <span className="figure-secondary block text-ink-muted">
-                  {tool.name}
-                </span>
-                <span className="measure mt-2 block text-ink-muted">
-                  {tool.description}
-                </span>
-                <span className="label-section mt-2 block">Not built yet</span>
-              </div>
-            )}
+              </span>
+              <span className="measure mt-2 block">{tool.description}</span>
+            </Link>
           </li>
         ))}
         <li>

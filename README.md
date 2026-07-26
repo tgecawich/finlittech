@@ -43,7 +43,7 @@ up, so that a refund rounds to the same magnitude as an equivalent charge; see
 | `credit-card.ts` | Month-by-month payoff simulation |
 | `compound.ts` | Future value of an ordinary annuity, and the cost of waiting to start |
 | `loan.ts` | Amortization, with the final payment absorbing the rounding residual |
-| `paycheck.ts` | Federal, FICA, and Rhode Island withholding |
+| `paycheck.ts` | Gross to net: federal, FICA, and Rhode Island withholding |
 | `constants.ts` | Every rate, bracket, and default — each with a source URL |
 
 Default rates and tax brackets are cited in `constants.ts` with the year they apply to.
