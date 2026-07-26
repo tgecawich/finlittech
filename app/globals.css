@@ -1,26 +1,113 @@
 @import "tailwindcss";
 
+/**
+ * Editorial design tokens.
+ *
+ * Defined once here and consumed through the Tailwind theme below. No component
+ * may contain a raw hex value — semantic names carry meaning that colour names
+ * do not, and a new colour appearing is a signal the design is drifting.
+ *
+ * Light-only in v1. This is deliberate: the primary contexts are classroom
+ * projectors, printed handouts and screenshots, all of which assume a light
+ * surface. See docs/decisions/0005-light-only-in-v1.md.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #fdfcf9; /* page surface, warm off-white */
+  --ink: #2c2c2a; /* primary text and the result numeral */
+  --ink-muted: #5f5e5a; /* labels, captions, secondary text */
+  --rule: #d3d1c7; /* hairlines */
+  --cost: #a32d2d; /* money lost. Interest paid, fees. */
+  --gain: #0f6e56; /* money kept. Growth, savings. */
+  --focus: #185fa5; /* focus rings only */
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-rule: var(--rule);
+  --color-cost: var(--cost);
+  --color-gain: var(--gain);
+  --color-focus: var(--focus);
+
+  /* Serif is for result numerals only. Never for body copy. */
+  --font-serif: var(--font-source-serif), Georgia, "Times New Roman", serif;
+  /* System stack: nothing to download, and the audience is on school wifi. */
+  --font-sans:
+    system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    /* Stop iOS inflating text in landscape, which breaks the type scale. */
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.7;
+  }
+
+  /* Never remove a focus ring without replacing it. */
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--rule);
+    color: var(--ink);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /**
+   * The five type roles from the design system, written out once so the spec
+   * table has exactly one implementation.
+   *
+   * tabular-nums is mandatory on every figure. Proportional digits change width
+   * as values update, which reads as broken.
+   */
+  .figure-primary {
+    font-family: var(--font-serif);
+    font-size: clamp(2.75rem, 12vw, 4.5rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .figure-secondary {
+    font-family: var(--font-serif);
+    font-size: 1.75rem;
+    font-weight: 400;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .label-section {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+    color: var(--ink-muted);
+  }
+
+  .caption {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--ink-muted);
+  }
+
+  /* Measure caps at 60ch. Wider than that stops being readable. */
+  .measure {
+    max-width: 60ch;
+  }
 }

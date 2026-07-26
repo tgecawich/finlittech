@@ -29,6 +29,7 @@ import {
   centsFromInteger,
   roundHalfAwayFromZero,
   type Cents,
+  type Months,
   type Rate,
 } from './types';
 
@@ -110,8 +111,12 @@ export interface FormatUSDOptions {
    *
    * The Voice section calls for "That costs you $912", not "$912.44" — headline
    * figures pass `cents: false`, schedules and line items keep the precision.
+   *
+   * `"auto"` shows cents only when there are any, so a sentence reads "paying
+   * $35 a month" rather than "paying $35.00 a month", without ever rounding
+   * $35.50 down to $36 and stating something untrue.
    */
-  readonly cents?: boolean;
+  readonly cents?: boolean | 'auto';
 }
 
 // Constructing an Intl.NumberFormat is expensive relative to formatting with
@@ -139,5 +144,29 @@ const WITHOUT_CENTS = new Intl.NumberFormat('en-US', {
  */
 export function formatUSD(amount: Cents, options: FormatUSDOptions = {}): string {
   const { cents = true } = options;
-  return (cents ? WITH_CENTS : WITHOUT_CENTS).format(toDollars(amount));
+  const showCents = cents === 'auto' ? amount % 100 !== 0 : cents;
+  return (showCents ? WITH_CENTS : WITHOUT_CENTS).format(toDollars(amount));
+}
+
+/**
+ * Render a count of months the way a person would say it.
+ *
+ * "55 months" is technically the answer and tells a sixteen-year-old nothing.
+ * "4 years 7 months" is the same fact in a unit they feel. Formatting at the
+ * boundary, like {@link formatUSD}, and tested for the same reason.
+ */
+export function formatDuration(months: Months): string {
+  if (months < 12) {
+    return months === 1 ? '1 month' : `${months} months`;
+  }
+
+  const years = Math.floor(months / 12);
+  const remainder = months % 12;
+  const yearPart = years === 1 ? '1 year' : `${years} years`;
+
+  if (remainder === 0) {
+    return yearPart;
+  }
+
+  return `${yearPart} ${remainder === 1 ? '1 month' : `${remainder} months`}`;
 }

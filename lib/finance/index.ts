@@ -23,6 +23,7 @@ export {
 export {
   addCents,
   compareCents,
+  formatDuration,
   formatUSD,
   maxCents,
   minCents,
@@ -35,6 +36,16 @@ export {
 } from './money';
 
 export { payoffMonths, type PayoffResult, type Period } from './credit-card';
+
+export {
+  MAX_INPUT_APR_PERCENT,
+  MAX_INPUT_DOLLARS,
+  parseMoney,
+  parseNonNegativeMoney,
+  parsePercent,
+  type MoneyParseResult,
+  type RateParseResult,
+} from './parse';
 
 export {
   DEFAULT_CREDIT_CARD_APR,

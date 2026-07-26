@@ -4,6 +4,7 @@ import fc from 'fast-check';
 import {
   addCents,
   compareCents,
+  formatDuration,
   formatUSD,
   maxCents,
   minCents,
@@ -141,6 +142,37 @@ describe('toDollars', () => {
   });
 });
 
+describe('formatDuration', () => {
+  it('says months below a year', () => {
+    expect(formatDuration(0)).toBe('0 months');
+    expect(formatDuration(1)).toBe('1 month');
+    expect(formatDuration(11)).toBe('11 months');
+  });
+
+  it('says whole years without a stray zero', () => {
+    expect(formatDuration(12)).toBe('1 year');
+    expect(formatDuration(24)).toBe('2 years');
+  });
+
+  it('says years and months together', () => {
+    expect(formatDuration(13)).toBe('1 year 1 month');
+    expect(formatDuration(25)).toBe('2 years 1 month');
+    expect(formatDuration(55)).toBe('4 years 7 months');
+  });
+
+  it('never says "1 years", "1 months", or a zero month remainder', () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: 1200 }), (months) => {
+        const text = formatDuration(months);
+        // Plurals must agree.
+        expect(text).not.toMatch(/\b1 (?:years|months)\b/);
+        // "1 year 0 months" is wrong; a bare "0 months" is correct and allowed.
+        expect(text).not.toMatch(/\byears? 0 months?\b/);
+      }),
+    );
+  });
+});
+
 describe('formatUSD', () => {
   it('formats whole dollars, sub-dollar amounts, and negatives', () => {
     expect(formatUSD(toCents(1200))).toBe('$1,200.00');
@@ -154,6 +186,26 @@ describe('formatUSD', () => {
     // The Voice section calls for "That costs you $912", not "$912.44".
     expect(formatUSD(toCents(912.44), { cents: false })).toBe('$912');
     expect(formatUSD(toCents(1200), { cents: false })).toBe('$1,200');
+  });
+
+  it('shows cents only when there are any, on auto', () => {
+    // For prose: "paying $35 a month", never "$35.00 a month".
+    expect(formatUSD(toCents(35), { cents: 'auto' })).toBe('$35');
+    expect(formatUSD(toCents(1200), { cents: 'auto' })).toBe('$1,200');
+    expect(formatUSD(toCents(0), { cents: 'auto' })).toBe('$0');
+    // But never rounds a real fraction away, which would state something false.
+    expect(formatUSD(toCents(35.5), { cents: 'auto' })).toBe('$35.50');
+    expect(formatUSD(toCents(912.44), { cents: 'auto' })).toBe('$912.44');
+    expect(formatUSD(toCents(-19.99), { cents: 'auto' })).toBe('-$19.99');
+  });
+
+  it('never loses value on auto, unlike cents: false', () => {
+    fc.assert(
+      fc.property(centsGen, (amount) => {
+        const auto = Number(formatUSD(amount, { cents: 'auto' }).replace(/[$,]/g, ''));
+        expect(toCents(auto)).toBe(amount);
+      }),
+    );
   });
 
   it('rounds whole-dollar output half away from zero, matching the domain', () => {
