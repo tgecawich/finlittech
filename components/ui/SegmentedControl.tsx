@@ -30,10 +30,11 @@ export function SegmentedControl<T extends string | number>({
             role="radio"
             aria-checked={selected}
             onClick={() => onChange(option.value)}
-            className={`figure-secondary transition-opacity duration-150 ${
-              selected
-                ? "text-ink"
-                : "text-ink-muted opacity-60 hover:opacity-100"
+            // No opacity on the unselected state: opacity over --ink-muted
+            // drops it to ~2.6:1, under the 3:1 large-text minimum. Full
+            // --ink-muted (6.33:1) already reads as secondary next to --ink.
+            className={`figure-secondary transition-colors duration-150 ${
+              selected ? "text-ink" : "text-ink-muted hover:text-ink"
             }`}
           >
             {option.label}
