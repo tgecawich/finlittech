@@ -150,6 +150,7 @@ export function PaycheckCalculator({ initial = {} }: PaycheckCalculatorProps) {
               options={FREQUENCIES}
               value={periodsPerYear}
               onChange={setPeriodsPerYear}
+              size="text"
             />
           </div>
         </div>

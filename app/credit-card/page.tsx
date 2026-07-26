@@ -42,7 +42,7 @@ export default async function CreditCardPage({ searchParams }: { searchParams: S
         <CreditCardCalculator initial={initial} />
       </div>
 
-      <SiteFooter />
+      <SiteFooter calculator="credit-card" />
     </main>
   );
 }

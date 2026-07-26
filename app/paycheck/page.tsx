@@ -42,7 +42,7 @@ export default async function PaycheckPage({ searchParams }: { searchParams: Sea
         <PaycheckCalculator initial={initial} />
       </div>
 
-      <SiteFooter />
+      <SiteFooter calculator="paycheck" />
     </main>
   );
 }

@@ -42,7 +42,7 @@ export default async function LoanPage({ searchParams }: { searchParams: SearchP
         <LoanCalculator initial={initial} />
       </div>
 
-      <SiteFooter />
+      <SiteFooter calculator="loan" />
     </main>
   );
 }

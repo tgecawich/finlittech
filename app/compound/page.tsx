@@ -42,7 +42,7 @@ export default async function CompoundPage({ searchParams }: { searchParams: Sea
         <CompoundCalculator initial={initial} />
       </div>
 
-      <SiteFooter />
+      <SiteFooter calculator="compound" />
     </main>
   );
 }
