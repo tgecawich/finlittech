@@ -3,14 +3,27 @@ import Link from "next/link";
 
 import { CreditCardCalculator } from "@/components/calculators/CreditCardCalculator";
 import { SiteFooter } from "@/components/ui/SiteFooter";
+import { CALCULATORS } from "@/lib/calculators";
+import { shareMetadata } from "@/lib/share";
+import { decodeState, firstValues, withDefaults } from "@/lib/url-state";
 
-export const metadata: Metadata = {
-  title: "Credit card",
-  description:
-    "See how long a credit card balance takes to pay off and what the interest costs, including when the payment never clears it.",
-};
+const CFG = CALCULATORS["credit-card"];
 
-export default function CreditCardPage() {
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}): Promise<Metadata> {
+  const params = firstValues(await searchParams);
+  return { title: "Credit card", ...shareMetadata("credit-card", params) };
+}
+
+export default async function CreditCardPage({ searchParams }: { searchParams: SearchParams }) {
+  const params = firstValues(await searchParams);
+  const initial = withDefaults(CFG.defaults, decodeState(new URLSearchParams(params), CFG.keys));
+
   return (
     <main className="mx-auto w-full max-w-2xl px-6 py-12 sm:py-16">
       <Link
@@ -26,7 +39,7 @@ export default function CreditCardPage() {
       </p>
 
       <div className="mt-12">
-        <CreditCardCalculator />
+        <CreditCardCalculator initial={initial} />
       </div>
 
       <SiteFooter />

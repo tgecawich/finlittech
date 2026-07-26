@@ -2,11 +2,15 @@
 
 import { useMemo, useState } from "react";
 
+import { useCompletion, useUrlSync } from "@/components/analytics";
+import { CopyLink } from "@/components/ui/CopyLink";
 import { Field } from "@/components/ui/Field";
 import { Figure } from "@/components/ui/Figure";
 import { MoneyInput } from "@/components/ui/MoneyInput";
 import { Rule } from "@/components/ui/Rule";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { calcDefault } from "@/lib/calculators";
+import { encodeState } from "@/lib/url-state";
 import {
   amortize,
   formatDuration,
@@ -18,10 +22,6 @@ import {
   type RateParseResult,
 } from "@/lib/finance";
 
-const DEFAULT_AMOUNT = "18,000";
-const DEFAULT_RATE = "7.5";
-const DEFAULT_TERM_MONTHS = 60;
-
 const TERM_OPTIONS = [
   { value: 48, label: "4y" },
   { value: 60, label: "5y" },
@@ -32,10 +32,16 @@ function errorOf(result: MoneyParseResult | RateParseResult): string | undefined
   return result.kind === "invalid" ? result.reason : undefined;
 }
 
-export function LoanCalculator() {
-  const [amountRaw, setAmountRaw] = useState(DEFAULT_AMOUNT);
-  const [rateRaw, setRateRaw] = useState(DEFAULT_RATE);
-  const [termMonths, setTermMonths] = useState<number>(DEFAULT_TERM_MONTHS);
+export interface LoanCalculatorProps {
+  initial?: Readonly<Record<string, string>>;
+}
+
+export function LoanCalculator({ initial = {} }: LoanCalculatorProps) {
+  const [amountRaw, setAmountRaw] = useState(initial.amount ?? calcDefault("loan", "amount"));
+  const [rateRaw, setRateRaw] = useState(initial.rate ?? calcDefault("loan", "rate"));
+  const [termMonths, setTermMonths] = useState<number>(
+    Math.round(Number(initial.term ?? calcDefault("loan", "term"))),
+  );
 
   const { amount, rate, result } = useMemo(() => {
     const parsedAmount = parseNonNegativeMoney(amountRaw);
@@ -48,6 +54,14 @@ export function LoanCalculator() {
 
     return { amount: parsedAmount, rate: parsedRate, result: computed };
   }, [amountRaw, rateRaw, termMonths]);
+
+  const queryString = encodeState({
+    amount: amountRaw,
+    rate: rateRaw,
+    term: String(termMonths),
+  });
+  useUrlSync(queryString);
+  useCompletion("loan", queryString, result !== null);
 
   const firstPeriod = result?.schedule[0] ?? null;
 
@@ -85,6 +99,7 @@ export function LoanCalculator() {
                 goes to the balance. That flips as the loan is paid down.
               </p>
             ) : null}
+            <CopyLink calculator="loan" />
           </div>
         )}
       </section>

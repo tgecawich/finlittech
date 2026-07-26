@@ -50,6 +50,12 @@ Default rates and tax brackets are cited in `constants.ts` with the year they ap
 The test suite fails if the tax year falls behind the current one, so the numbers
 can't quietly go stale.
 
+Calculator inputs live in the URL, so every result is a shareable link that
+restores on load — and a shared link previews with its headline number, because
+[`app/api/og/route.tsx`](app/api/og/route.tsx) renders that number into the
+Open Graph image. None of this stores anything: the URL is the only state, and
+it lives on your device.
+
 Design decisions worth explaining are recorded in [`docs/decisions/`](docs/decisions/).
 
 ## Running it

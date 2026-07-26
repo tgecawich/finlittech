@@ -3,14 +3,27 @@ import Link from "next/link";
 
 import { LoanCalculator } from "@/components/calculators/LoanCalculator";
 import { SiteFooter } from "@/components/ui/SiteFooter";
+import { CALCULATORS } from "@/lib/calculators";
+import { shareMetadata } from "@/lib/share";
+import { decodeState, firstValues, withDefaults } from "@/lib/url-state";
 
-export const metadata: Metadata = {
-  title: "Loan",
-  description:
-    "See the monthly payment on a car or personal loan, and how much of it is interest over the life of the loan.",
-};
+const CFG = CALCULATORS.loan;
 
-export default function LoanPage() {
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}): Promise<Metadata> {
+  const params = firstValues(await searchParams);
+  return { title: "Loan", ...shareMetadata("loan", params) };
+}
+
+export default async function LoanPage({ searchParams }: { searchParams: SearchParams }) {
+  const params = firstValues(await searchParams);
+  const initial = withDefaults(CFG.defaults, decodeState(new URLSearchParams(params), CFG.keys));
+
   return (
     <main className="mx-auto w-full max-w-2xl px-6 py-12 sm:py-16">
       <Link
@@ -26,7 +39,7 @@ export default function LoanPage() {
       </p>
 
       <div className="mt-12">
-        <LoanCalculator />
+        <LoanCalculator initial={initial} />
       </div>
 
       <SiteFooter />

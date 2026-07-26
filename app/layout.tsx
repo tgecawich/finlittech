@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Source_Serif_4 } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 /**
@@ -41,7 +42,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${sourceSerif.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        {/* Privacy-respecting: page views only, no cookies, no PII. */}
+        <Analytics />
+      </body>
     </html>
   );
 }

@@ -2,11 +2,15 @@
 
 import { useMemo, useState } from "react";
 
+import { useCompletion, useUrlSync } from "@/components/analytics";
+import { CopyLink } from "@/components/ui/CopyLink";
 import { Field } from "@/components/ui/Field";
 import { Figure } from "@/components/ui/Figure";
 import { MoneyInput } from "@/components/ui/MoneyInput";
 import { Rule } from "@/components/ui/Rule";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { calcDefault } from "@/lib/calculators";
+import { encodeState } from "@/lib/url-state";
 import {
   costOfWaiting,
   formatUSD,
@@ -21,10 +25,6 @@ import { GrowthChart } from "./GrowthChart";
 const DELAY_YEARS = 10;
 const DELAY_MONTHS = DELAY_YEARS * 12;
 
-const DEFAULT_MONTHLY = "100";
-const DEFAULT_RETURN = "7";
-const DEFAULT_YEARS = 40;
-
 const HORIZON_OPTIONS = [
   { value: 20, label: "20y" },
   { value: 30, label: "30y" },
@@ -35,10 +35,16 @@ function errorOf(result: MoneyParseResult | RateParseResult): string | undefined
   return result.kind === "invalid" ? result.reason : undefined;
 }
 
-export function CompoundCalculator() {
-  const [monthlyRaw, setMonthlyRaw] = useState(DEFAULT_MONTHLY);
-  const [returnRaw, setReturnRaw] = useState(DEFAULT_RETURN);
-  const [years, setYears] = useState<number>(DEFAULT_YEARS);
+export interface CompoundCalculatorProps {
+  initial?: Readonly<Record<string, string>>;
+}
+
+export function CompoundCalculator({ initial = {} }: CompoundCalculatorProps) {
+  const [monthlyRaw, setMonthlyRaw] = useState(initial.monthly ?? calcDefault("compound", "monthly"));
+  const [returnRaw, setReturnRaw] = useState(initial.return ?? calcDefault("compound", "return"));
+  const [years, setYears] = useState<number>(
+    Math.round(Number(initial.years ?? calcDefault("compound", "years"))),
+  );
 
   const { monthly, annualReturn, result } = useMemo(() => {
     const parsedMonthly = parseNonNegativeMoney(monthlyRaw);
@@ -56,6 +62,14 @@ export function CompoundCalculator() {
 
     return { monthly: parsedMonthly, annualReturn: parsedReturn, result: computed };
   }, [monthlyRaw, returnRaw, years]);
+
+  const queryString = encodeState({
+    monthly: monthlyRaw,
+    return: returnRaw,
+    years: String(years),
+  });
+  useUrlSync(queryString);
+  useCompletion("compound", queryString, result !== null);
 
   const altText = useMemo(() => {
     if (result === null) return "Enter an amount and a return to see the projection.";
@@ -110,6 +124,9 @@ export function CompoundCalculator() {
               altText={altText}
             />
             <p className="caption measure mt-4">{altText}</p>
+            <div className="mt-6">
+              <CopyLink calculator="compound" />
+            </div>
           </>
         )}
       </div>

@@ -2,11 +2,15 @@
 
 import { useMemo, useState } from "react";
 
+import { useCompletion, useUrlSync } from "@/components/analytics";
+import { CopyLink } from "@/components/ui/CopyLink";
 import { Field } from "@/components/ui/Field";
 import { Figure } from "@/components/ui/Figure";
 import { MoneyInput } from "@/components/ui/MoneyInput";
 import { Rule } from "@/components/ui/Rule";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { calcDefault } from "@/lib/calculators";
+import { encodeState } from "@/lib/url-state";
 import {
   divideCents,
   estimatePaycheck,
@@ -15,8 +19,6 @@ import {
   type Cents,
   type PaycheckResult,
 } from "@/lib/finance";
-
-const DEFAULT_SALARY = "45,000";
 
 const FREQUENCIES = [
   { value: 52, label: "Weekly" },
@@ -29,9 +31,15 @@ interface LineItem {
   amount: Cents;
 }
 
-export function PaycheckCalculator() {
-  const [salaryRaw, setSalaryRaw] = useState(DEFAULT_SALARY);
-  const [periodsPerYear, setPeriodsPerYear] = useState<number>(26);
+export interface PaycheckCalculatorProps {
+  initial?: Readonly<Record<string, string>>;
+}
+
+export function PaycheckCalculator({ initial = {} }: PaycheckCalculatorProps) {
+  const [salaryRaw, setSalaryRaw] = useState(initial.salary ?? calcDefault("paycheck", "salary"));
+  const [periodsPerYear, setPeriodsPerYear] = useState<number>(
+    Math.round(Number(initial.freq ?? calcDefault("paycheck", "freq"))),
+  );
 
   const { salary, result } = useMemo(() => {
     const parsed = parseNonNegativeMoney(salaryRaw);
@@ -39,6 +47,10 @@ export function PaycheckCalculator() {
       parsed.kind === "valid" ? estimatePaycheck(parsed.value) : null;
     return { salary: parsed, result: computed };
   }, [salaryRaw]);
+
+  const queryString = encodeState({ salary: salaryRaw, freq: String(periodsPerYear) });
+  useUrlSync(queryString);
+  useCompletion("paycheck", queryString, result !== null);
 
   const keptPercent =
     result === null ? null : Math.round((1 - result.effectiveRate) * 100);
@@ -102,6 +114,9 @@ export function PaycheckCalculator() {
               <dd className="tabular-nums text-cost">{formatUSD(result.totalTax)}</dd>
             </div>
           </dl>
+          <div className="mt-6">
+            <CopyLink calculator="paycheck" />
+          </div>
         </div>
       )}
 

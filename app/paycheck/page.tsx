@@ -3,14 +3,27 @@ import Link from "next/link";
 
 import { PaycheckCalculator } from "@/components/calculators/PaycheckCalculator";
 import { SiteFooter } from "@/components/ui/SiteFooter";
+import { CALCULATORS } from "@/lib/calculators";
+import { shareMetadata } from "@/lib/share";
+import { decodeState, firstValues, withDefaults } from "@/lib/url-state";
 
-export const metadata: Metadata = {
-  title: "Paycheck",
-  description:
-    "See what you actually keep from a salary after federal tax, Social Security, Medicare, and Rhode Island tax.",
-};
+const CFG = CALCULATORS.paycheck;
 
-export default function PaycheckPage() {
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}): Promise<Metadata> {
+  const params = firstValues(await searchParams);
+  return { title: "Paycheck", ...shareMetadata("paycheck", params) };
+}
+
+export default async function PaycheckPage({ searchParams }: { searchParams: SearchParams }) {
+  const params = firstValues(await searchParams);
+  const initial = withDefaults(CFG.defaults, decodeState(new URLSearchParams(params), CFG.keys));
+
   return (
     <main className="mx-auto w-full max-w-2xl px-6 py-12 sm:py-16">
       <Link
@@ -26,7 +39,7 @@ export default function PaycheckPage() {
       </p>
 
       <div className="mt-12">
-        <PaycheckCalculator />
+        <PaycheckCalculator initial={initial} />
       </div>
 
       <SiteFooter />

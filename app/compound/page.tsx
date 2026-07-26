@@ -3,14 +3,27 @@ import Link from "next/link";
 
 import { CompoundCalculator } from "@/components/calculators/CompoundCalculator";
 import { SiteFooter } from "@/components/ui/SiteFooter";
+import { CALCULATORS } from "@/lib/calculators";
+import { shareMetadata } from "@/lib/share";
+import { decodeState, firstValues, withDefaults } from "@/lib/url-state";
 
-export const metadata: Metadata = {
-  title: "Compound interest",
-  description:
-    "See what starting to invest now is worth against starting ten years later — the same monthly amount, a very different ending.",
-};
+const CFG = CALCULATORS.compound;
 
-export default function CompoundPage() {
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}): Promise<Metadata> {
+  const params = firstValues(await searchParams);
+  return { title: "Compound interest", ...shareMetadata("compound", params) };
+}
+
+export default async function CompoundPage({ searchParams }: { searchParams: SearchParams }) {
+  const params = firstValues(await searchParams);
+  const initial = withDefaults(CFG.defaults, decodeState(new URLSearchParams(params), CFG.keys));
+
   return (
     <main className="mx-auto w-full max-w-2xl px-6 py-12 sm:py-16">
       <Link
@@ -26,7 +39,7 @@ export default function CompoundPage() {
       </p>
 
       <div className="mt-12">
-        <CompoundCalculator />
+        <CompoundCalculator initial={initial} />
       </div>
 
       <SiteFooter />

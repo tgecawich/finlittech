@@ -2,13 +2,16 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { useCompletion, useUrlSync } from "@/components/analytics";
 import { Callout } from "@/components/ui/Callout";
+import { CopyLink } from "@/components/ui/CopyLink";
 import { Field } from "@/components/ui/Field";
 import { Figure } from "@/components/ui/Figure";
 import { MoneyInput } from "@/components/ui/MoneyInput";
 import { Rule } from "@/components/ui/Rule";
+import { calcDefault } from "@/lib/calculators";
+import { encodeState } from "@/lib/url-state";
 import {
-  DEFAULT_CREDIT_CARD_APR,
   addCents,
   formatDuration,
   formatUSD,
@@ -20,18 +23,6 @@ import {
   type RateParseResult,
 } from "@/lib/finance";
 
-/**
- * Prefilled with a realistic scenario so the page answers its question before
- * anyone types. The audience has about forty-five seconds of patience, and an
- * empty form asks them to spend it on data entry.
- *
- * The APR default is derived from the cited constant rather than written out
- * again, so the two can never disagree.
- */
-const DEFAULT_BALANCE = "1,200";
-const DEFAULT_PAYMENT = "35";
-const DEFAULT_APR = (DEFAULT_CREDIT_CARD_APR * 100).toFixed(2);
-
 /** Delay before the result is announced to a screen reader. */
 const ANNOUNCE_DELAY_MS = 700;
 
@@ -39,10 +30,15 @@ function errorOf(result: MoneyParseResult | RateParseResult): string | undefined
   return result.kind === "invalid" ? result.reason : undefined;
 }
 
-export function CreditCardCalculator() {
-  const [balanceRaw, setBalanceRaw] = useState(DEFAULT_BALANCE);
-  const [aprRaw, setAprRaw] = useState(DEFAULT_APR);
-  const [paymentRaw, setPaymentRaw] = useState(DEFAULT_PAYMENT);
+/** Initial values from the URL (server-decoded), falling back to the defaults. */
+export interface CreditCardCalculatorProps {
+  initial?: Readonly<Record<string, string>>;
+}
+
+export function CreditCardCalculator({ initial = {} }: CreditCardCalculatorProps) {
+  const [balanceRaw, setBalanceRaw] = useState(initial.balance ?? calcDefault("credit-card", "balance"));
+  const [aprRaw, setAprRaw] = useState(initial.apr ?? calcDefault("credit-card", "apr"));
+  const [paymentRaw, setPaymentRaw] = useState(initial.payment ?? calcDefault("credit-card", "payment"));
 
   const { balance, apr, payment, result } = useMemo(() => {
     const parsedBalance = parseNonNegativeMoney(balanceRaw);
@@ -73,6 +69,16 @@ export function CreditCardCalculator() {
   }, [balanceRaw, aprRaw, paymentRaw]);
 
   const summary = useSummary(result, balance, payment);
+
+  // Reflect state into the URL so every result is a shareable link, and count
+  // real use — never the values themselves.
+  const queryString = encodeState({
+    balance: balanceRaw,
+    apr: aprRaw,
+    payment: paymentRaw,
+  });
+  useUrlSync(queryString);
+  useCompletion("credit-card", queryString, result !== null);
 
   /**
    * The figure updates instantly; only the screen-reader announcement is
@@ -106,6 +112,12 @@ export function CreditCardCalculator() {
         {announced}
       </p>
 
+      {result !== null ? (
+        <div className="mt-8">
+          <CopyLink calculator="credit-card" />
+        </div>
+      ) : null}
+
       <Rule className="my-10" />
 
       <form
@@ -132,7 +144,7 @@ export function CreditCardCalculator() {
         <Field
           htmlFor="apr"
           label="Interest rate"
-          hint={`${DEFAULT_APR}% is the average for cards carrying a balance.`}
+          hint={`${calcDefault("credit-card", "apr")}% is the average for cards carrying a balance.`}
           error={errorOf(apr)}
         >
           <MoneyInput
