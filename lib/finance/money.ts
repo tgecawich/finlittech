@@ -148,6 +148,24 @@ export function formatUSD(amount: Cents, options: FormatUSDOptions = {}): string
   return (showCents ? WITH_CENTS : WITHOUT_CENTS).format(toDollars(amount));
 }
 
+const COMPACT = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  notation: 'compact',
+  maximumFractionDigits: 1,
+});
+
+/**
+ * Render an amount abbreviated: `$262K`, `$1.2M`, `$950`.
+ *
+ * For chart axes and inline plot labels, where the full figure is too long and
+ * the precise cents are noise. The headline still uses {@link formatUSD}; this
+ * is only ever a label on a picture.
+ */
+export function formatCompactUSD(amount: Cents): string {
+  return COMPACT.format(toDollars(amount));
+}
+
 /**
  * Render a count of months the way a person would say it.
  *

@@ -41,7 +41,7 @@ up, so that a refund rounds to the same magnitude as an equivalent charge; see
 | `money.ts` | Arithmetic on cents, and `formatUSD()` at the boundary |
 | `parse.ts` | Turns typed text into cents, returning a union instead of throwing |
 | `credit-card.ts` | Month-by-month payoff simulation |
-| `compound.ts` | Future value of an ordinary annuity |
+| `compound.ts` | Future value of an ordinary annuity, and the cost of waiting to start |
 | `loan.ts` | Amortization, with the final payment absorbing the rounding residual |
 | `paycheck.ts` | Federal, FICA, and Rhode Island withholding |
 | `constants.ts` | Every rate, bracket, and default — each with a source URL |

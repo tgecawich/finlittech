@@ -25,6 +25,7 @@ describe('lib/finance public API', () => {
         'centsFromInteger',
         'compareCents',
         'costOfWaiting',
+        'formatCompactUSD',
         'formatDuration',
         'formatUSD',
         'maxCents',

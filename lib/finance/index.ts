@@ -23,6 +23,7 @@ export {
 export {
   addCents,
   compareCents,
+  formatCompactUSD,
   formatDuration,
   formatUSD,
   maxCents,

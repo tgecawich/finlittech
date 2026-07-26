@@ -127,6 +127,11 @@ export interface WaitingCostResult {
   readonly immediateContributed: Cents;
   /** Total the delayed saver pays in — always less, since they contribute for fewer months. */
   readonly delayedContributed: Cents;
+  /**
+   * How much *more* the immediate saver pays in. The whole point of the chart
+   * is that this is small next to {@link costOfWaiting}.
+   */
+  readonly extraContributed: Cents;
 }
 
 /**
@@ -158,5 +163,6 @@ export function costOfWaiting(
     costOfWaiting: subtractCents(immediateFinal.value, delayedFinal.value),
     immediateContributed: immediateFinal.contributed,
     delayedContributed: delayedFinal.contributed,
+    extraContributed: subtractCents(immediateFinal.contributed, delayedFinal.contributed),
   };
 }

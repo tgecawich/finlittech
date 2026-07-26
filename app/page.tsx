@@ -20,7 +20,7 @@ const TOOLS = [
     name: "Compound interest",
     description:
       "What starting now is worth against starting ten years from now.",
-    href: null,
+    href: "/compound",
   },
   {
     name: "Loan",

@@ -4,6 +4,7 @@ import fc from 'fast-check';
 import {
   addCents,
   compareCents,
+  formatCompactUSD,
   formatDuration,
   formatUSD,
   maxCents,
@@ -139,6 +140,22 @@ describe('toDollars', () => {
     expect(toDollars(toCents(1200))).toBe(1200);
     expect(toDollars(toCents(0.42))).toBe(0.42);
     expect(toDollars(toCents(-19.99))).toBe(-19.99);
+  });
+});
+
+describe('formatCompactUSD', () => {
+  it('abbreviates thousands and millions, and leaves small amounts whole', () => {
+    // One significant decimal is kept, which reads cleanly as an axis label.
+    expect(formatCompactUSD(toCents(950))).toBe('$950');
+    expect(formatCompactUSD(toCents(1500))).toBe('$1.5K');
+    expect(formatCompactUSD(toCents(48_000))).toBe('$48K');
+    expect(formatCompactUSD(toCents(262_481))).toBe('$262.5K');
+    expect(formatCompactUSD(toCents(1_218_000))).toBe('$1.2M');
+  });
+
+  it('handles zero and negatives', () => {
+    expect(formatCompactUSD(toCents(0))).toBe('$0');
+    expect(formatCompactUSD(toCents(-2500))).toBe('-$2.5K');
   });
 });
 

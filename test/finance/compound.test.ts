@@ -160,9 +160,10 @@ describe('costOfWaiting — hand-checked', () => {
     expect(result.costOfWaiting).toBe(toCents(102.01));
   });
 
-  it('reports what each saver paid in', () => {
+  it('reports what each saver paid in, and the small gap between them', () => {
     expect(result.immediateContributed).toBe(toCents(300));
     expect(result.delayedContributed).toBe(toCents(200));
+    expect(result.extraContributed).toBe(toCents(100));
   });
 
   it('keeps both series on the same timeline', () => {
