@@ -45,6 +45,8 @@ export {
   type WaitingCostResult,
 } from './compound';
 
+export { amortize, type LoanPeriod, type LoanResult } from './loan';
+
 export {
   MAX_INPUT_APR_PERCENT,
   MAX_INPUT_DOLLARS,

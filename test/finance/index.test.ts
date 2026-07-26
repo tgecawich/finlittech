@@ -21,6 +21,7 @@ describe('lib/finance public API', () => {
         'ONE_CENT',
         'ZERO_CENTS',
         'addCents',
+        'amortize',
         'assertAnnualRate',
         'centsFromInteger',
         'compareCents',
