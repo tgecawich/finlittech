@@ -39,6 +39,7 @@ up, so that a refund rounds to the same magnitude as an equivalent charge; see
 | --- | --- |
 | `types.ts` | `Cents`, `Rate`, `Months`, and the validating constructors |
 | `money.ts` | Arithmetic on cents, and `formatUSD()` at the boundary |
+| `parse.ts` | Turns typed text into cents, returning a union instead of throwing |
 | `credit-card.ts` | Month-by-month payoff simulation |
 | `compound.ts` | Future value of an ordinary annuity |
 | `loan.ts` | Amortization, with the final payment absorbing the rounding residual |
