@@ -38,6 +38,13 @@ export {
 export { payoffMonths, type PayoffResult, type Period } from './credit-card';
 
 export {
+  costOfWaiting,
+  projectSavings,
+  type CompoundPoint,
+  type WaitingCostResult,
+} from './compound';
+
+export {
   MAX_INPUT_APR_PERCENT,
   MAX_INPUT_DOLLARS,
   parseMoney,
