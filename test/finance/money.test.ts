@@ -4,6 +4,7 @@ import fc from 'fast-check';
 import {
   addCents,
   compareCents,
+  divideCents,
   formatCompactUSD,
   formatDuration,
   formatUSD,
@@ -95,6 +96,20 @@ describe('multiplyCentsByRate', () => {
         expect(Number.isInteger(multiplyCentsByRate(amount, rate))).toBe(true);
       }),
     );
+  });
+});
+
+describe('divideCents', () => {
+  it('splits into equal pieces, rounding to a whole cent', () => {
+    expect(divideCents(toCents(1200), 12)).toBe(toCents(100));
+    expect(divideCents(toCents(100), 3)).toBe(toCents(33.33)); // 33.333.. → 33.33
+    expect(divideCents(toCents(-52), 26)).toBe(toCents(-2));
+  });
+
+  it('throws on a non-positive or fractional divisor', () => {
+    expect(() => divideCents(toCents(100), 0)).toThrow(RangeError);
+    expect(() => divideCents(toCents(100), -2)).toThrow(RangeError);
+    expect(() => divideCents(toCents(100), 2.5)).toThrow(RangeError);
   });
 });
 

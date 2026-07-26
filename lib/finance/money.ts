@@ -69,6 +69,21 @@ export function multiplyCentsByRate(amount: Cents, rate: Rate): Cents {
   return centsFromInteger(roundHalfAwayFromZero(amount * rate));
 }
 
+/**
+ * Divide an amount into `parts` equal pieces, rounding to a whole cent.
+ *
+ * For splitting an annual figure across pay periods at the render boundary. The
+ * rounded pieces need not sum back to the original — this answers "about how
+ * much per paycheck," not "allocate every cent" — so it is a display helper, not
+ * an allocator.
+ */
+export function divideCents(amount: Cents, parts: number): Cents {
+  if (!Number.isInteger(parts) || parts <= 0) {
+    throw new RangeError(`divideCents: parts must be a positive integer, received ${parts}`);
+  }
+  return centsFromInteger(roundHalfAwayFromZero(amount / parts));
+}
+
 /** Total of a list of amounts. An empty list sums to zero. */
 export function sumCents(amounts: readonly Cents[]): Cents {
   let total = 0;

@@ -23,6 +23,7 @@ export {
 export {
   addCents,
   compareCents,
+  divideCents,
   formatCompactUSD,
   formatDuration,
   formatUSD,
@@ -47,6 +48,8 @@ export {
 
 export { amortize, type LoanPeriod, type LoanResult } from './loan';
 
+export { estimatePaycheck, type Bracket, type PaycheckResult } from './paycheck';
+
 export {
   MAX_INPUT_APR_PERCENT,
   MAX_INPUT_DOLLARS,
@@ -58,8 +61,19 @@ export {
 } from './parse';
 
 export {
+  ADDITIONAL_MEDICARE_RATE,
+  ADDITIONAL_MEDICARE_THRESHOLD,
   DEFAULT_CREDIT_CARD_APR,
   DEFAULT_CREDIT_CARD_APR_AS_OF,
+  FEDERAL_BRACKETS_SINGLE,
+  FEDERAL_STANDARD_DEDUCTION_SINGLE,
+  MEDICARE_RATE,
   MINIMUM_PAYMENT_BALANCE_FRACTION,
   MINIMUM_PAYMENT_FLOOR,
+  RI_BRACKETS,
+  RI_PERSONAL_EXEMPTION,
+  RI_STANDARD_DEDUCTION_SINGLE,
+  SOCIAL_SECURITY_RATE,
+  SOCIAL_SECURITY_WAGE_BASE,
+  TAX_YEAR,
 } from './constants';
