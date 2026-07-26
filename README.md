@@ -2,7 +2,7 @@
 
 Free personal finance calculators for high school students.
 
-**Live:** _(coming soon)_
+**Live:** <https://finlittech.vercel.app>
 
 Rhode Island requires a consumer education course to graduate (RIGL 16-22-13). This
 project accompanies original research on that requirement, and starts from the
