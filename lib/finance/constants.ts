@@ -16,8 +16,11 @@ import { toCents, type Cents, type Rate } from './types';
  * payoff calculator.
  *
  * Source: Federal Reserve G.19 Consumer Credit release, "Terms of credit at
- * commercial banks and finance companies", series RIFSPPFAAD72NM.
- * https://www.federalreserve.gov/releases/g19/current/
+ * commercial banks and finance companies", series TERMCBCCINTNS (accounts
+ * assessed interest). https://www.federalreserve.gov/releases/g19/current/
+ *
+ * Verified 2026-07-25 against the G.19 released 2026-07-08: the May 2026
+ * observation — the Q2 2026 data point in this quarterly series — is 22.15%.
  *
  * The G.19 series is quarterly and published with a lag, so
  * {@link DEFAULT_CREDIT_CARD_APR_AS_OF} records which release this figure came
