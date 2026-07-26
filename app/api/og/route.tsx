@@ -89,5 +89,10 @@ export async function GET(request: Request) {
       { name: "Source Serif 4", data: serif400, weight: 400, style: "normal" },
       { name: "Source Serif 4", data: serif600, weight: 600, style: "normal" },
     ],
+    headers: {
+      // The image is a pure function of the query, so it can be cached hard —
+      // a crawler that fetches the same shared link should not re-render it.
+      "Cache-Control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+    },
   });
 }
